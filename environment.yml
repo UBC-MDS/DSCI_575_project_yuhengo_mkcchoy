@@ -1,0 +1,12 @@
+name: 575_env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - pandas
+  - nltk
+  - pip
+  - pip:
+      - langchain-core
+      - rank-bm25
+      - sentence-transformers
