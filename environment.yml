@@ -11,3 +11,4 @@ dependencies:
       - langchain-core
       - rank-bm25
       - sentence-transformers
+      - python-dotenv
