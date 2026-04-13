@@ -6,9 +6,6 @@ import nltk
 import streamlit as st
 from sentence_transformers import SentenceTransformer
 
-from bm25 import load_bm25, bm25_search
-from semantic import load_faiss, semantic_search
-
 try:
     nltk.data.find("corpora/stopwords")
 except LookupError:
@@ -17,6 +14,9 @@ except LookupError:
 APP_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_ROOT = os.path.abspath(os.path.join(APP_DIR, ".."))
 sys.path.append(PROJECT_ROOT)
+
+from src.bm25 import load_bm25, bm25_search
+from src.semantic import load_faiss, semantic_search
 
 BM25_DIR = os.path.join(PROJECT_ROOT, "bm25_index")
 SEMANTIC_DIR = os.path.join(PROJECT_ROOT, "semantic_index")
