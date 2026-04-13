@@ -1,4 +1,4 @@
-name: 575_env
+name: dsci-575-mkc-yho
 channels:
   - conda-forge
   - pytorch
