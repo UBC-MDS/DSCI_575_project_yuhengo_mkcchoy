@@ -1,5 +1,0 @@
-pandas
-langchain-core
-nltk
-rank-bm25
-sentence-transformers
