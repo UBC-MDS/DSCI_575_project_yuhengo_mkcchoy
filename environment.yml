@@ -4,6 +4,8 @@ channels:
   - pytorch
 dependencies:
   - python=3.10
+  - ipykernel
+  - jupyterlab
   - pandas
   - nltk
   - pip
