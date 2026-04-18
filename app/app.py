@@ -17,12 +17,13 @@ sys.path.append(PROJECT_ROOT)
 
 from src.bm25 import load_bm25, bm25_search
 from src.semantic import load_faiss, semantic_search
+from src.rag_pipeline import build_hybrid_rag_chain
 
 BM25_DIR = os.path.join(PROJECT_ROOT, "bm25_index")
 SEMANTIC_DIR = os.path.join(PROJECT_ROOT, "semantic_index")
 MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
 DISPLAY_K = 3
-RETRIEVAL_K = 10  # more for hybrid search
+RETRIEVAL_K = 10
 
 
 @st.cache_resource
@@ -30,7 +31,8 @@ def load_resources():
     bm25, _ = load_bm25(BM25_DIR)
     index, documents = load_faiss(SEMANTIC_DIR)
     model = SentenceTransformer(MODEL_NAME)
-    return bm25, index, documents, model
+    hybrid_rag_chain = build_hybrid_rag_chain(docs=documents, k=5)
+    return bm25, index, documents, model, hybrid_rag_chain
 
 
 def extract_title(text):
@@ -38,10 +40,15 @@ def extract_title(text):
     return lines[0] if lines else "Untitled result"
 
 
-def extract_snippet(text, max_chars=200):
+def extract_snippet(text, max_chars=1000):
     lines = [line.strip() for line in text.splitlines() if line.strip()]
     body = " ".join(lines[1:]) if len(lines) > 1 else lines[0] if lines else ""
     return body[:max_chars].rstrip() + ("..." if len(body) > max_chars else "")
+
+
+def truncate_text(text, max_chars=1000):
+    text = (text or "").strip()
+    return text[:max_chars].rstrip() + ("..." if len(text) > max_chars else "")
 
 
 def format_rating(rating):
@@ -110,7 +117,7 @@ def render_result_card(result, mode, show_score=True, show_snippet=True):
         col1, col2, col3 = st.columns(3)
         col1.caption(f"Source: {source}")
         col2.caption(f"ASIN: {asin}")
-        col3.caption(f"Rating: {format_rating(rating)}")
+        col3.caption(f"Average rating: {format_rating(rating)}")
 
         if show_score:
             if mode == "BM25":
@@ -131,32 +138,88 @@ def main():
 
     st.title("🛒 Amazon Product Query Assistant")
     st.write(
-        "A simple retrieval prototype using BM25, semantic search, and hybrid search."
+        "A simple product assistant prototype with retrieval-only search and Hybrid RAG."
     )
 
-    bm25, index, documents, model = load_resources()
+    bm25, index, documents, model, hybrid_rag_chain = load_resources()
 
     with st.sidebar:
-        st.header("Search Options")
-        mode = st.radio("Search mode", ["BM25", "Semantic", "Hybrid"], index=0)
+        st.header("Display Options")
         show_score = st.checkbox("Show retrieval score", value=True)
-        show_snippet = st.checkbox("Show text snippet", value=True)
+        show_snippet = st.checkbox("Show text snippet (max. 1000 characters)", value=True)
 
-    with st.form("search_form"):
-        query = st.text_input(
-            "Enter a product query", value="quiet dishwasher stainless steel"
+    tab_retrieval, tab_rag = st.tabs(["Retrieval Mode", "RAG Mode"])
+
+    with tab_retrieval:
+        st.subheader("Result-Only Search")
+        st.caption("Search from product metadata and reviews.")
+
+        retrieval_mode = st.radio(
+            "Search mode",
+            ["BM25", "Semantic", "Hybrid"],
+            index=0,
+            horizontal=True,
+            key="retrieval_mode",
         )
-        submitted = st.form_submit_button("Search")
 
-    if submitted and query.strip():
-        results = run_search(query.strip(), mode, bm25, index, documents, model)
-
-        st.subheader(f"Top {len(results)} results for: {query}")
-        for i, result in enumerate(results, start=1):
-            st.markdown(f"### Result {i}")
-            render_result_card(
-                result, mode=mode, show_score=show_score, show_snippet=show_snippet
+        with st.form("retrieval_form"):
+            retrieval_query = st.text_input(
+                "Enter a product query",
+                value="quiet dishwasher stainless steel",
+                key="retrieval_query",
             )
+            retrieval_submitted = st.form_submit_button("Search")
+
+        if retrieval_submitted and retrieval_query.strip():
+            results = run_search(
+                retrieval_query.strip(), retrieval_mode, bm25, index, documents, model
+            )
+
+            st.subheader(f"Top {len(results)} results for: {retrieval_query}")
+            for i, result in enumerate(results, start=1):
+                st.markdown(f"### Result {i}")
+                render_result_card(
+                    result,
+                    mode=retrieval_mode,
+                    show_score=show_score,
+                    show_snippet=show_snippet,
+                )
+
+    with tab_rag:
+        st.subheader("Hybrid RAG")
+        st.caption(
+            "Generate an LLM-powered answer, then inspect the top retrieved products."
+        )
+
+        with st.form("rag_form"):
+            rag_query = st.text_input(
+                "Enter a product question",
+                value="best dishwasher for a small apartment under $800",
+                key="rag_query",
+            )
+            rag_submitted = st.form_submit_button("Ask")
+
+        if rag_submitted and rag_query.strip():
+            query = rag_query.strip()
+
+            with st.spinner("Generating answer..."):
+                rag_answer = hybrid_rag_chain.invoke(query)
+
+            st.markdown("### Generated Answer")
+            with st.container(border=True):
+                st.write(truncate_text(rag_answer, max_chars=1000))
+
+            rag_results = run_search(query, "Hybrid", bm25, index, documents, model)
+
+            st.markdown("### Retrieved Products")
+            for i, result in enumerate(rag_results, start=1):
+                st.markdown(f"### Result {i}")
+                render_result_card(
+                    result,
+                    mode="Hybrid",
+                    show_score=show_score,
+                    show_snippet=show_snippet,
+                )
 
 
 if __name__ == "__main__":
