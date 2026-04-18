@@ -137,16 +137,14 @@ def main():
     )
 
     st.title("🛒 Amazon Product Query Assistant")
-    st.write(
-        "A simple product assistant result-only search and Hybrid RAG."
-    )
+    st.write("A simple product assistant result-only search and Hybrid RAG.")
 
     bm25, index, documents, model, hybrid_rag_chain = load_resources()
 
     with st.sidebar:
         st.header("Display Options")
         show_score = st.checkbox("Show retrieval score", value=True)
-        show_snippet = st.checkbox("Show text snippet (max. 1000 characters)", value=True)
+        show_snippet = st.checkbox("Show text snippet", value=True)
 
     tab_retrieval, tab_rag = st.tabs(["Retrieval Mode", "RAG Mode"])
 

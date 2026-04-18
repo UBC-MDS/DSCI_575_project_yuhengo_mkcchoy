@@ -6,7 +6,7 @@ We use Meta-Llama-3-8B-Instruct through the Hugging Face Inference API because i
 
 ## Results
 
-We run the same queries as in `results/milestone1` and compare results of 5 out of 10 queries. The results (with a text limit) are recorded in `notebooks/milestone2_rag.ipynb`. We evaluate the results based on three dimensions (accuracy completeness, and fluency). Due to the nature of LLMs, the responses vary on each run, so the evaluation results can change if you run the test multiple times. Therefore, this is only a rough glance of the performance of the RAG-driven result. To carefully evaluate the model's performance, we will require a more thoughtful design of the qualitative rubrics and perform a large-scale analysis.
+We run the same queries as in `results/milestone1` and compare results of 5 out of 10 queries. The results (with a response length limit due to API restrictions) are recorded in `notebooks/milestone2_rag.ipynb`. We evaluate the results based on three dimensions (accuracy completeness, and fluency). Due to the nature of LLMs, the responses vary on each run, so the evaluation results can change if you run the test multiple times. Therefore, this is only a rough glance of the performance of the RAG-driven result. To carefully evaluate the model's performance, we will require a more thoughtful design of the qualitative rubrics and perform a large-scale analysis.
 
 | Query | Accuracy | Completeness | Fluency | Brief Notes |
 | --- | --- | --- | --- | --- |
