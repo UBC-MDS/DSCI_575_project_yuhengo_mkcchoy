@@ -12,7 +12,11 @@ dependencies:
   - nltk
   - pip
   - pip:
+      - langchain
       - langchain-core
+      - langchain-community
+      - langchain-huggingface
+      - langchain-openai
       - rank-bm25
       - sentence-transformers
       - python-dotenv
