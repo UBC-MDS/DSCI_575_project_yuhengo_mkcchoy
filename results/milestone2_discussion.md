@@ -9,7 +9,7 @@ We use Meta-Llama-3-8B-Instruct through the Hugging Face Inference API because i
 We run the same queries as in `results/milestone1` and compare results of 5 out of 10 queries. We evaluate the results based on three dimensions (accuracy/completeness/fluency).
 
 | Query | Accuracy | Completeness | Fluency | Brief Notes |
-| --- | --- | --- | --- | --- | --- |
+| --- | --- | --- | --- | --- |
 | `gas range 30 inch` | Yes | Yes | Yes | The answer directly addresses the request by listing relevant 30-inch gas ranges. |
 | `something to keep drinks cold in a dorm room` | Yes | Yes | Yes | The answer identifies relevant mini fridge options and matches the use case well.|
 | `appliance for washing dishes quietly at night` | Yes | Yes | Yes | The response addresses the goal by identifying a dishwasher described as quiet. This is an example of retrieval form semantic queries. |
