@@ -49,3 +49,23 @@ To run the app locally, follow the following steps:
 4. Enter product-related queries in the input box and click the "Search" button. The results may be limited since our test models are built on a subset of the full dataset. For better results, you can try queries related to the "Appliances" category, such as "quiet dishwasher stainless steel".
 
 5. To stop the app, press `Ctrl+C` in the terminal where the Streamlit app is running.
+
+# Workflow diagram
+```mermaid
+flowchart LR
+    A[User Query] --> B{Retriever}
+    B --> C[Semantic Retriever<br/>FAISS + Embeddings]
+    B --> D[Hybrid Retriever<br/>BM25 + Semantic + RRF]
+
+    C --> E[Top-k Documents]
+    D --> E
+
+    E --> F[build_context]
+    F --> G[Prompt Template]
+    G --> H[Hugging Face LLM]
+    H --> I[Generated Answer]
+
+    J[Amazon product docs<br/>reviews + metadata] --> C
+    J --> D
+    K[.env API key] --> H
+```
