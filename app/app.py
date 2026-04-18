@@ -138,7 +138,7 @@ def main():
 
     st.title("🛒 Amazon Product Query Assistant")
     st.write(
-        "A simple product assistant prototype with retrieval-only search and Hybrid RAG."
+        "A simple product assistant result-only search and Hybrid RAG."
     )
 
     bm25, index, documents, model, hybrid_rag_chain = load_resources()
