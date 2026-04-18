@@ -6,7 +6,7 @@ We use Meta-Llama-3-8B-Instruct through the Hugging Face Inference API because i
 
 ## Results
 
-We run the same queries as in `results/milestone1` and compare results of 5 out of 10 queries. We evaluate the results based on three dimensions (accuracy/completeness/fluency).
+We run the same queries as in `results/milestone1` and compare results of 5 out of 10 queries. The full results are recorded in `notebooks/milestone2_rag.ipynb`. We evaluate the results based on three dimensions (accuracy completeness, and fluency).
 
 | Query | Accuracy | Completeness | Fluency | Brief Notes |
 | --- | --- | --- | --- | --- |
