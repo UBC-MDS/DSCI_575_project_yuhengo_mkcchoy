@@ -10,6 +10,9 @@ Components:
 - LLM (HuggingFaceEndpoint wrapped in ChatHuggingFace)
 - LCEL RAG chains (semantic + hybrid)
 """
+
+import os
+from dotenv import load_dotenv
 from typing import List, Dict, Any, Optional
 from collections import defaultdict
 
@@ -33,15 +36,12 @@ from src.semantic import (
     semantic_search,
 )
 
+load_dotenv()
 
-# 2.3 Prompt template
-SYSTEM_PROMPT = """
-You are a helpful Amazon shopping assistant.
-Answer the question using ONLY the following context (real product reviews + metadata).
-If the answer is not in the context, say you don't know.
-Always cite the product ASIN when possible.
-Be concise and directly address the question.
-""".strip()
+# Prompt template
+from src.prompts import SYSTEM_PROMPT_V1, SYSTEM_PROMPT_V2, SYSTEM_PROMPT_V3
+
+SYSTEM_PROMPT = SYSTEM_PROMPT_V3
 
 
 def build_prompt_template(system_prompt: str = SYSTEM_PROMPT) -> ChatPromptTemplate:
@@ -67,7 +67,7 @@ Answer based ONLY on the context above:"""
     )
 
 
-# 2.2 Context building
+# Context building
 def build_context(docs: List[Document]) -> str:
     """
     Convert retrieved documents into a clean, structured context block.
@@ -107,17 +107,13 @@ def build_context(docs: List[Document]) -> str:
             header_lines.append(f"Rating: {rating_str}")
             header_lines.append(f"Verified Purchase: {verified_str}")
 
-        block = (
-            "\n".join(header_lines)
-            + "\n\nText:\n"
-            + doc.page_content
-        )
+        block = "\n".join(header_lines) + "\n\nText:\n" + doc.page_content
         blocks.append(block)
 
     return "\n\n---\n\n".join(blocks)
 
 
-# 2.1 Semantic retriever (LangChain)
+# Semantic retriever (LangChain)
 def build_semantic_retriever(
     docs: List[Document],
     k: int = 5,
@@ -144,7 +140,7 @@ def build_semantic_retriever(
     return retriever
 
 
-# 3.1 BM25 retriever wrapper
+# BM25 retriever wrapper
 class BM25RetrieverLC(Runnable):
     """
     LangChain-style retriever wrapper around the custom BM25 implementation in bm25.py.
@@ -160,15 +156,16 @@ class BM25RetrieverLC(Runnable):
         self.documents = documents
         self.k = k
 
-    def invoke(self, query: str, config: Optional[Dict[str, Any]] = None) -> List[Document]:
+    def invoke(
+        self, query: str, config: Optional[Dict[str, Any]] = None
+    ) -> List[Document]:
         """
         Run BM25 search and return top-k Documents.
         """
         results = bm25_search(query, self.bm25, self.documents, k=self.k)
         # bm25_search returns list of dicts with "text" and "metadata"
         docs = [
-            Document(page_content=r["text"], metadata=r["metadata"])
-            for r in results
+            Document(page_content=r["text"], metadata=r["metadata"]) for r in results
         ]
         return docs
 
@@ -192,7 +189,7 @@ def build_bm25_retriever(
     return BM25RetrieverLC(bm25=bm25, documents=docs, k=k)
 
 
-# 3.3 Hybrid retriever with RRF
+# Hybrid retriever with RRF
 class HybridRetriever(Runnable):
     """
     Hybrid retriever that combines BM25 and semantic retrievers using Reciprocal Rank Fusion (RRF).
@@ -232,7 +229,9 @@ class HybridRetriever(Runnable):
         source = meta.get("source", "")
         return ("content", doc.page_content, source)
 
-    def invoke(self, query: str, config: Optional[Dict[str, Any]] = None) -> List[Document]:
+    def invoke(
+        self, query: str, config: Optional[Dict[str, Any]] = None
+    ) -> List[Document]:
         """
         Run both retrievers, fuse results with RRF, and return top-k Documents.
         """
@@ -311,19 +310,26 @@ def build_llm(
     """
     Build the ChatHuggingFace LLM wrapper around HuggingFaceEndpoint.
 
-    Please set HUGGINGFACEHUB_API_TOKEN in the environment.
+    Assumes `HUGGINGFACEHUB_API_TOKEN=<your-api-token>` in `.env`.
     """
+    api_token = os.getenv("HUGGINGFACEHUB_API_TOKEN")
+    if not api_token:
+        raise ValueError(
+            "HUGGINGFACEHUB_API_TOKEN not found. Please set it in your .env file."
+        )
+
     llm_endpoint = HuggingFaceEndpoint(
         repo_id=repo_id,
         task=task,
         max_new_tokens=max_new_tokens,
         provider=provider,
+        huggingfacehub_api_token=api_token,
     )
     llm = ChatHuggingFace(llm=llm_endpoint)
     return llm
 
 
-# 2.4 / 3.4 RAG pipelines
+# RAG pipelines
 def build_semantic_rag_chain(
     docs: List[Document],
     k: int = 5,
@@ -393,10 +399,3 @@ def build_hybrid_rag_chain(
     )
 
     return rag_chain
-
-
-if __name__ == "__main__":
-    print(
-        "RAG pipeline module. Import and use "
-        "build_semantic_rag_chain or build_hybrid_rag_chain in your notebook or scripts"
-    )
