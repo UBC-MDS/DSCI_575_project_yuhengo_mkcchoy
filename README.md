@@ -1,6 +1,6 @@
 # Amazon Product Query Assistant
 
-This project explores how to build a smart product search assistant for Amazon products using different information retrieval methods. It compares BM25 keyword retrieval and semantic search with embeddings on the [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/) dataset, then presents the results through an interactive [Streamlit](https://streamlit.io/) app.
+This project explores how to build a smart Amazon product query assistant using multiple information retrieval and generation methods. It compares BM25 keyword retrieval, semantic search with embeddings, and a Hybrid RAG pipeline on the [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/) dataset. The system supports both retrieval-only search and retrieval-augmented generation (RAG), and presents the results through an interactive [Streamlit](https://streamlit.io/) app where users can explore product results or receive LLM-generated answers based on retrieved Amazon product metadata and reviews.
 
 ## Project maintainers
 
@@ -40,17 +40,28 @@ To run the app locally, follow the following steps:
     conda activate dsci-575-mkc-yho
     ```
 
-3. Start the Streamlit app. The app should open in your default web browser at `http://localhost:8501`. If it does not open automatically, you can navigate to that URL manually. It should take a few seconds to load the full app.
+3. To use the RAG mode, create a Hugging Face Access Token following their [instruction](https://huggingface.co/docs/hub/en/security-tokens). When creating a new token,
+   - Choose "Fine-grained" for token type
+   - Check all permissions under "Repositories" and "Inference"
+
+4. Add the API token into your local folder. This should not be committed to any remote repositories. Replace `<your-api-token>` with the token value you just created and run the following in your terminal. You must have this ready to use the LLM-powered RAG mode.
+
+   ```bash
+   echo "HUGGINGFACEHUB_API_TOKEN=<your-api-token>" > .env
+   ```
+
+5. Start the Streamlit app. The app should open in your default web browser at `http://localhost:8501`. If it does not open automatically, you can navigate to that URL manually. It can take a few minutes to load the full app.
 
     ```bash
     streamlit run app/app.py
     ```
 
-4. Enter product-related queries in the input box and click the "Search" button. The results may be limited since our test models are built on a subset of the full dataset. For better results, you can try queries related to the "Appliances" category, such as "quiet dishwasher stainless steel".
+6. Enter product-related queries in the input box and click the "Search" button. The results may be limited since our test models are built on a subset of the full dataset. For better results, you can try queries related to the "Appliances" category, such as "quiet dishwasher stainless steel".
 
-5. To stop the app, press `Ctrl+C` in the terminal where the Streamlit app is running.
+7. To stop the app, press `Ctrl+C` in the terminal where the Streamlit app is running.
 
-# Workflow diagram
+## RAG workflow diagram
+
 ```mermaid
 flowchart LR
     A[User Query] --> B{Retriever}
