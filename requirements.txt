@@ -1,0 +1,10 @@
+python=3.10
+faiss
+nltk
+langchain
+langchain-core
+langchain-community
+langchain-huggingface
+langchain-openai
+rank-bm25
+sentence-transformers
