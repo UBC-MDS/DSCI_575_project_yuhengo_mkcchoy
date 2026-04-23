@@ -6,3 +6,4 @@ langchain-huggingface
 langchain-openai
 rank-bm25
 sentence-transformers
+streamlit
