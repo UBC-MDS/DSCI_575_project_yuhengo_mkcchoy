@@ -60,6 +60,12 @@ To run the app locally, follow the following steps:
 
 7. To stop the app, press `Ctrl+C` in the terminal where the Streamlit app is running.
 
+8. For developers who want to retrain the models with a different sample size or adjust the training process, you can modify `src/build_artifacts.py` and run the following command to rebuild the model artifacts. This will retrain the BM25 and semantic retrievers and save the new artifacts in their respective folders.
+
+    ```bash
+    python src/build_artifacts.py
+    ```
+
 ## RAG workflow diagram
 
 ```mermaid
