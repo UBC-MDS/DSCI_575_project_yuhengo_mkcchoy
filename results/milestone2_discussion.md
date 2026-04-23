@@ -2,7 +2,7 @@
 
 ## Model choice and rationale
 
-We use Meta-Llama-3-8B-Instruct through the Hugging Face Inference API because it is a strong general-purpose instruction model and using an API avoids the burden of hosting an LLM locally.
+We use `Meta-Llama-3-8B-Instruct` through the Hugging Face Inference API because it is a strong general-purpose instruction model and using an API avoids the burden of hosting an LLM locally.
 
 ## Results
 
