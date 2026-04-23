@@ -31,7 +31,7 @@ We deployed our web interface onto Posit Cloud.
 
 ## 4: Cloud Deployment Plan
 
-- Data Storage: To deploy our Amazon product recommendation tool on a cloud platform such as AWS, we would rely on a combination of managed storage, scalable compute, and automated update pipelines. All raw product data would be stored in Amazon S3. After preprocessing, the cleaned datasets would also be saved in S3. The vector index used for semantic search would be hosted in Amazon OpenSearch Serverless with its vector engine enabled, while the BM25 keyword index would be maintained in the same OpenSearch environment.
+- Data Storage: To deploy our Amazon product recommendation tool on a cloud platform such as AWS, we would rely on a combination of managed storage, scalable compute, and automated update pipelines. All raw product data would be stored in Amazon S3. After preprocessing, the cleaned datasets would also be saved in S3. Both the BM25 keyword index and the vector index used for semantic search would be hosted in Amazon OpenSearch Serverless with its vector engine enabled.
 
 - Compute: The application would run either as a serverless API on AWS Lambda. Lambda is sufficient for lightweight, stateless requests and automatically scales to handle concurrent users. User traffic would be routed through Amazon API Gateway, which manages concurrency and request throttling. For LLM inference, we would rely on an external API such as OpenAI rather than hosting our own model.
 
