@@ -302,7 +302,7 @@ def build_hybrid_retriever(
 
 # LLM construction
 def build_llm(
-    repo_id: str = "meta-llama/Meta-Llama-3-8B-Instruct",
+    repo_id: str = "Qwen/Qwen2.5-7B-Instruct",
     max_new_tokens: int = 200,
     task: str = "text-generation",
     provider: str = "auto",
