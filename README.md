@@ -2,6 +2,8 @@
 
 This project explores how to build a smart Amazon product query assistant using multiple information retrieval and generation methods. It compares BM25 keyword retrieval, semantic search with embeddings, and a Hybrid RAG pipeline on the [Amazon Reviews 2023](https://amazon-reviews-2023.github.io/) dataset. The system supports both retrieval-only search and retrieval-augmented generation (RAG), and presents the results through an interactive [Streamlit](https://streamlit.io/) app where users can explore product results or receive LLM-generated answers based on retrieved Amazon product metadata and reviews.
 
+The web interface can now be accessed at <https://yhouyang02-dsci-575-project-yuhengo-mkcchoy.share.connect.posit.cloud>.
+
 ## Project maintainers
 
 - [Mickey Choy](https://github.com/Maple018)
